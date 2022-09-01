@@ -6,38 +6,41 @@ const galleryBox = document.querySelector(".gallery");
 const addGallary = (galleryItems) => {
   const allImages = galleryItems
     .map(({ preview, original, description }) => {
-      const imagePattern = `<div class="gallery__item">
-    <a class="gallery__link" href=${original}>
-      <img
-        class="gallery__image"
-        src=${preview}
-        data-source=${original}
-        alt='${description}'
-      />
-    </a>
-  </div>`;
-
-      return imagePattern;
+      return `<div class="gallery__item">
+      <a class="gallery__link" href=${original}>
+        <img
+          class="gallery__image"
+          src=${preview}
+          data-source=${original}
+          alt='${description}'
+        />
+      </a>
+    </div>`;
     })
     .join("");
   galleryBox.insertAdjacentHTML("beforeend", allImages);
 };
 
 addGallary(galleryItems);
+let instance;
 
-galleryBox.addEventListener("click", (e) => {
+galleryBox.addEventListener("click", increaseImage);
+
+function increaseImage(e) {
   e.preventDefault();
-  console.dir(e);
   if (e.target.tagName === "IMG") {
-    const instance = basicLightbox.create(`
+    instance = basicLightbox.create(`
     <img src="${e.target.dataset.source}" width="800" height="600">
 `);
-
     instance.show();
-    galleryBox.addEventListener("keydown", (e) => {
-      if (e.code === "Escape") {
-        instance.close();
-      }
-    });
   }
-});
+  galleryBox.addEventListener("keydown", decreaseImage);
+}
+
+function decreaseImage(e) {
+  if (e.code === "Escape") {
+    instance.close();
+    galleryBox.removeEventListener("keydown", decreaseImage);
+    console.log("dsfsd");
+  }
+}
